@@ -1,16 +1,25 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 
+import { useDispatch, useSelector } from '../../services/store';
+import {
+  selectIsUserLoading,
+  selectUser,
+  selectUserError,
+  updateUser
+} from '../../services/slices/userSlice';
+import { TRegisterData } from '@api';
+
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const dispatch = useDispatch();
+
+  const user = useSelector(selectUser);
+  const updateUserError = useSelector(selectUserError);
+  const isUserLoading = useSelector(selectIsUserLoading);
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || '',
+    email: user?.email || '',
     password: ''
   });
 
@@ -18,7 +27,8 @@ export const Profile: FC = () => {
     setFormValue((prevState) => ({
       ...prevState,
       name: user?.name || '',
-      email: user?.email || ''
+      email: user?.email || '',
+      password: ''
     }));
   }, [user]);
 
@@ -27,15 +37,38 @@ export const Profile: FC = () => {
     formValue.email !== user?.email ||
     !!formValue.password;
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
+
+    if (!user || isUserLoading || !isFormChanged) return;
+
+    const changedUserData: Partial<TRegisterData> = {};
+
+    if (formValue.name !== user.name) {
+      changedUserData.name = formValue.name;
+    }
+
+    if (formValue.email !== user.email) {
+      changedUserData.email = formValue.email;
+    }
+
+    if (formValue.password) {
+      changedUserData.password = formValue.password;
+    }
+
+    try {
+      await dispatch(updateUser(changedUserData)).unwrap();
+    } catch {
+      // Ошибка уже сохранена в userSlice и выводится через updateUserError
+    }
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
+
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name || '',
+      email: user?.email || '',
       password: ''
     });
   };
@@ -51,11 +84,10 @@ export const Profile: FC = () => {
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
+      updateUserError={updateUserError || ''}
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

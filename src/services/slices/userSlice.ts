@@ -5,6 +5,7 @@ import {
   loginUserApi,
   logoutApi,
   registerUserApi,
+  updateUserApi,
   TLoginData,
   TRegisterData
 } from '@api';
@@ -57,6 +58,15 @@ export const checkUserAuth = createAsyncThunk(
     }
 
     const response = await getUserApi();
+
+    return response.user;
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  async (data: Partial<TRegisterData>) => {
+    const response = await updateUserApi(data);
 
     return response.user;
   }
@@ -124,6 +134,18 @@ export const userSlice = createSlice({
         state.isUserLoading = false;
         state.user = null;
         state.isAuthChecked = true;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isUserLoading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isUserLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isUserLoading = false;
+        state.error = action.error.message || 'Ошибка обновления данных';
       })
       .addCase(logoutUser.pending, (state) => {
         state.isUserLoading = true;
