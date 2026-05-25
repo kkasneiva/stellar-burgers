@@ -13,7 +13,7 @@ import {
   ResetPassword
 } from '@pages';
 
-import { AppHeader, IngredientDetails, Modal } from '@components';
+import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { Preloader } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
 import {
@@ -57,6 +57,7 @@ const App = () => {
           <Routes location={background || location}>
             <Route path='/' element={<ConstructorPage />} />
             <Route path='/feed' element={<Feed />} />
+            <Route path='/feed/:number' element={<OrderInfo />} />
             <Route path='/ingredients/:id' element={<IngredientDetails />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
@@ -74,6 +75,14 @@ const App = () => {
                 element={
                   <Modal title='Детали ингредиента' onClose={handleCloseModal}>
                     <IngredientDetails />
+                  </Modal>
+                }
+              />
+              <Route
+                path='/feed/:number'
+                element={
+                  <Modal title='' onClose={handleCloseModal}>
+                    <OrderInfo />
                   </Modal>
                 }
               />
