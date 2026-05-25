@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import {
   ConstructorPage,
@@ -13,12 +13,11 @@ import {
   ResetPassword
 } from '@pages';
 
-import { AppHeader } from '@components';
+import { AppHeader, IngredientDetails, Modal } from '@components';
 import { Preloader } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
 import {
   getIngredients,
-  selectIngredients,
   selectIngredientsError,
   selectIsIngredientsLoading
 } from '../../services/slices/ingredientsSlice';
@@ -28,14 +27,21 @@ import styles from './app.module.css';
 
 const App = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const background = location.state?.background;
 
   const isIngredientsLoading = useSelector(selectIsIngredientsLoading);
-  const ingredients = useSelector(selectIngredients);
   const error = useSelector(selectIngredientsError);
 
   useEffect(() => {
     dispatch(getIngredients());
   }, [dispatch]);
+
+  const handleCloseModal = () => {
+    navigate(-1);
+  };
 
   return (
     <div className={styles.app}>
@@ -47,17 +53,33 @@ const App = () => {
           {error}
         </div>
       ) : (
-        <Routes>
-          <Route path='/' element={<ConstructorPage />} />
-          <Route path='/feed' element={<Feed />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/forgot-password' element={<ForgotPassword />} />
-          <Route path='/reset-password' element={<ResetPassword />} />
-          <Route path='/profile' element={<Profile />} />
-          <Route path='/profile/orders' element={<ProfileOrders />} />
-          <Route path='*' element={<NotFound404 />} />
-        </Routes>
+        <>
+          <Routes location={background || location}>
+            <Route path='/' element={<ConstructorPage />} />
+            <Route path='/feed' element={<Feed />} />
+            <Route path='/ingredients/:id' element={<IngredientDetails />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/forgot-password' element={<ForgotPassword />} />
+            <Route path='/reset-password' element={<ResetPassword />} />
+            <Route path='/profile' element={<Profile />} />
+            <Route path='/profile/orders' element={<ProfileOrders />} />
+            <Route path='*' element={<NotFound404 />} />
+          </Routes>
+
+          {background && (
+            <Routes>
+              <Route
+                path='/ingredients/:id'
+                element={
+                  <Modal title='Детали ингредиента' onClose={handleCloseModal}>
+                    <IngredientDetails />
+                  </Modal>
+                }
+              />
+            </Routes>
+          )}
+        </>
       )}
     </div>
   );
