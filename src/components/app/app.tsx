@@ -117,6 +117,14 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path='/profile/orders/:number'
+              element={
+                <ProtectedRoute>
+                  <OrderInfo />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path='*' element={<NotFound404 />} />
           </Routes>
@@ -137,6 +145,16 @@ const App = () => {
                   <Modal title='' onClose={handleCloseModal}>
                     <OrderInfo />
                   </Modal>
+                }
+              />
+              <Route
+                path='/profile/orders/:number'
+                element={
+                  <ProtectedRoute>
+                    <Modal title='' onClose={handleCloseModal}>
+                      <OrderInfo />
+                    </Modal>
+                  </ProtectedRoute>
                 }
               />
             </Routes>

@@ -7,6 +7,7 @@ import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
 import { selectIngredients } from '../../services/slices/ingredientsSlice';
 import { selectFeedOrders } from '../../services/slices/feedSlice';
+import { selectProfileOrders } from '../../services/slices/profileOrdersSlice';
 import {
   getOrderByNumber,
   selectCurrentOrder,
@@ -21,14 +22,16 @@ export const OrderInfo: FC = () => {
 
   const ingredients = useSelector(selectIngredients);
   const feedOrders = useSelector(selectFeedOrders);
+  const profileOrders = useSelector(selectProfileOrders);
   const currentOrder = useSelector(selectCurrentOrder);
   const isOrderInfoLoading = useSelector(selectIsOrderInfoLoading);
 
   const orderData = useMemo(
     () =>
       feedOrders.find((order) => order.number === orderNumber) ||
+      profileOrders.find((order) => order.number === orderNumber) ||
       (currentOrder?.number === orderNumber ? currentOrder : null),
-    [feedOrders, currentOrder, orderNumber]
+    [feedOrders, profileOrders, currentOrder, orderNumber]
   );
 
   useEffect(() => {
