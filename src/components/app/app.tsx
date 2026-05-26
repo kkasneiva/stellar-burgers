@@ -4,7 +4,8 @@ import {
   Routes,
   useLocation,
   useMatch,
-  useNavigate
+  useNavigate,
+  useParams
 } from 'react-router-dom';
 
 import {
@@ -52,6 +53,26 @@ const IngredientDetailsPage = () => (
   </main>
 );
 
+const OrderInfoPage = () => {
+  const { number } = useParams();
+
+  const orderNumber = number ? `#${number.padStart(6, '0')}` : '';
+
+  return (
+    <main
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        paddingTop: '120px'
+      }}
+    >
+      <h1 className='text text_type_digits-default mb-10'>{orderNumber}</h1>
+      <OrderInfo />
+    </main>
+  );
+};
+
 const App = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -93,7 +114,7 @@ const App = () => {
           <Routes location={background || location}>
             <Route path='/' element={<ConstructorPage />} />
             <Route path='/feed' element={<Feed />} />
-            <Route path='/feed/:number' element={<OrderInfo />} />
+            <Route path='/feed/:number' element={<OrderInfoPage />} />
             <Route
               path='/ingredients/:id'
               element={<IngredientDetailsPage />}
@@ -152,7 +173,7 @@ const App = () => {
               path='/profile/orders/:number'
               element={
                 <ProtectedRoute>
-                  <OrderInfo />
+                  <OrderInfoPage />
                 </ProtectedRoute>
               }
             />
