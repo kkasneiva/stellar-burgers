@@ -1,9 +1,10 @@
-import { FC, SyntheticEvent, useState } from 'react';
+import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { RegisterUI } from '@ui-pages';
 import { useDispatch, useSelector } from '../../services/store';
 import {
+  clearUserError,
   registerUser,
   selectIsUserLoading,
   selectUserError
@@ -19,6 +20,13 @@ export const Register: FC = () => {
 
   const errorText = useSelector(selectUserError);
   const isUserLoading = useSelector(selectIsUserLoading);
+
+  useEffect(
+    () => () => {
+      dispatch(clearUserError());
+    },
+    [dispatch]
+  );
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();

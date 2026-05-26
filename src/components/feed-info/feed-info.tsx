@@ -8,7 +8,7 @@ import {
   selectFeedOrders
 } from '../../services/slices/feedSlice';
 
-const getOrders = (orders: TOrder[], status: string): number[] =>
+const getOrders = (orders: TOrder[], status: TOrder['status']): number[] =>
   orders
     .filter((item) => item.status === status)
     .map((item) => item.number)

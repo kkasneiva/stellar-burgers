@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice
+} from '@reduxjs/toolkit';
 
 import { getFeedsApi } from '@api';
 import { TOrder } from '@utils-types';
@@ -29,10 +33,16 @@ export const feedSlice = createSlice({
   reducers: {},
   selectors: {
     selectFeedOrders: (state) => state.orders,
-    selectFeedData: (state) => ({
-      total: state.total,
-      totalToday: state.totalToday
-    }),
+    selectFeedData: createSelector(
+      [
+        (state: TFeedState) => state.total,
+        (state: TFeedState) => state.totalToday
+      ],
+      (total, totalToday) => ({
+        total,
+        totalToday
+      })
+    ),
     selectIsFeedLoading: (state) => state.isFeedLoading,
     selectFeedError: (state) => state.error
   },
