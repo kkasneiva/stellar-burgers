@@ -35,3 +35,43 @@ test('adds ingredients to burger constructor', async ({ page }) => {
   await expect(page.getByTestId('constructor-empty-filling')).not.toBeVisible();
   await expect(page.getByTestId('constructor-empty-bun-bottom')).not.toBeVisible();
 });
+
+test('opens ingredient modal with selected ingredient details', async ({
+  page
+}) => {
+  await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
+
+  const modal = page.getByTestId('modal');
+
+  await expect(modal).toBeVisible();
+  await expect(modal).toContainText('Биокотлета из марсианской Магнолии');
+  await expect(modal).toContainText('4242');
+  await expect(modal).toContainText('420');
+  await expect(modal).toContainText('142');
+  await expect(modal).toContainText('242');
+});
+
+test('closes ingredient modal by close button', async ({ page }) => {
+  await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
+
+  await expect(page.getByTestId('modal')).toBeVisible();
+
+  await page.getByTestId('modal-close-button').click();
+
+  await expect(page.getByTestId('modal')).not.toBeVisible();
+});
+
+test('closes ingredient modal by overlay click', async ({ page }) => {
+  await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
+
+  await expect(page.getByTestId('modal')).toBeVisible();
+
+  await page.getByTestId('modal-overlay').click({
+    position: {
+      x: 10,
+      y: 10
+    }
+  });
+
+  await expect(page.getByTestId('modal')).not.toBeVisible();
+});
