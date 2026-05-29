@@ -5,25 +5,11 @@ const mainId = '643d69a5c3f7b9001cfa0941';
 const sauceId = '643d69a5c3f7b9001cfa0942';
 
 test.describe('Burger constructor page', () => {
-  test.beforeEach(async ({ page, context }) => {
-    await context.addCookies([
-      {
-        name: 'accessToken',
-        value: 'Bearer test-access-token',
-        url: 'http://localhost:4000'
-      }
-    ]);
-
-    await page.addInitScript(() => {
-      window.localStorage.setItem('refreshToken', 'test-refresh-token');
-    });
-
+  test.beforeEach(async ({ page }) => {
     await page.routeFromHAR('tests/hars/burger-api.har', {
       url: 'https://norma.education-services.ru/api/**',
       update: false
     });
-
-    await page.goto('/');
   });
 
   test.afterEach(async ({ page, context }) => {
@@ -35,6 +21,8 @@ test.describe('Burger constructor page', () => {
   });
 
   test('adds ingredients to burger constructor', async ({ page }) => {
+    await page.goto('/');
+
     await expect(page.getByText('Соберите бургер')).toBeVisible();
 
     await expect(page.getByTestId('constructor-empty-bun-top')).toBeVisible();
@@ -74,6 +62,8 @@ test.describe('Burger constructor page', () => {
   test('opens ingredient modal with selected ingredient details', async ({
     page
   }) => {
+    await page.goto('/');
+
     await expect(page.getByTestId('modal')).not.toBeVisible();
 
     await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
@@ -89,6 +79,8 @@ test.describe('Burger constructor page', () => {
   });
 
   test('closes ingredient modal by close button', async ({ page }) => {
+    await page.goto('/');
+
     await expect(page.getByTestId('modal')).not.toBeVisible();
 
     await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
@@ -101,6 +93,8 @@ test.describe('Burger constructor page', () => {
   });
 
   test('closes ingredient modal by overlay click', async ({ page }) => {
+    await page.goto('/');
+
     await expect(page.getByTestId('modal')).not.toBeVisible();
 
     await page.getByTestId(`ingredient-${mainId}`).locator('a').click();
@@ -118,8 +112,23 @@ test.describe('Burger constructor page', () => {
   });
 
   test('creates order and clears constructor after closing order modal', async ({
-    page
+    page,
+    context
   }) => {
+    await context.addCookies([
+      {
+        name: 'accessToken',
+        value: 'Bearer test-access-token',
+        url: 'http://localhost:4000'
+      }
+    ]);
+
+    await page.addInitScript(() => {
+      window.localStorage.setItem('refreshToken', 'test-refresh-token');
+    });
+
+    await page.goto('/');
+
     await expect(page.getByTestId('modal')).not.toBeVisible();
 
     await page.getByTestId(`add-ingredient-${bunId}`).locator('button').click();

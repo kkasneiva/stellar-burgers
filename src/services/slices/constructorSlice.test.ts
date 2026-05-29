@@ -1,6 +1,7 @@
 import { TConstructorIngredient, TIngredient } from '@utils-types';
 import constructorReducer, {
   addIngredient,
+  clearConstructor,
   moveIngredientDown,
   moveIngredientUp,
   removeIngredient
@@ -91,10 +92,7 @@ describe('constructorSlice', () => {
       ingredients: [mockConstructorMain, mockConstructorSauce]
     };
 
-    const state = constructorReducer(
-      initialState,
-      removeIngredient('main-id')
-    );
+    const state = constructorReducer(initialState, removeIngredient('main-id'));
 
     expect(state.ingredients).toEqual([mockConstructorSauce]);
   });
@@ -125,5 +123,19 @@ describe('constructorSlice', () => {
       mockConstructorSauce,
       mockConstructorMain
     ]);
+  });
+
+  test('clears constructor', () => {
+    const initialState = {
+      bun: mockBun,
+      ingredients: [mockConstructorMain, mockConstructorSauce]
+    };
+
+    const state = constructorReducer(initialState, clearConstructor());
+
+    expect(state).toEqual({
+      bun: null,
+      ingredients: []
+    });
   });
 });
